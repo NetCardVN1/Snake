@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Snake Pixel PWA</title>
+    <title>Snake Pixel 🐍</title>
     <meta name="google" content="notranslate">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="192×192.jpeg">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.3/dist/dotlottie-wc.js" type="module"></script>
 </head>
 <body>
     <div id="main-menu">
-        <dotlottie-wc src="https://lottie.host/8bfd1523-c1b2-4bd6-8ae6-d8efb146eeb8/0nBVMTgMOg.lottie" style="width: 250px; height: 250px" autoplay loop></dotlottie-wc>
-        <button class="menu-btn" onclick="startGame()">CHƠI</button>
-        <button class="menu-btn" onclick="showDifficulty()">MỨC ĐỘ</button>
-        <button class="menu-btn" onclick="exitGame()">THOÁT</button>
+        <div class="avatar-container">
+            <dotlottie-wc src="https://lottie.host/8bfd1523-c1b2-4bd6-8ae6-d8efb146eeb8/0nBVMTgMOg.lottie" id="menu-lottie" autoplay loop></dotlottie-wc>
+        </div>
+        <h1 id="game-title">SNAKE PIXEL</h1>
+        <button class="menu-btn" onclick="startGame()">▶ CHƠI NGAY</button>
+        <button class="menu-btn" onclick="showDifficulty()">⚙ MỨC ĐỘ</button>
+        <button class="menu-btn" onclick="exitGame()">❌ THOÁT</button>
     </div>
 
     <div id="game-screen" style="display: none;">
@@ -25,7 +27,6 @@
             <span id="high-score">Kỷ lục: 0</span>
         </div>
         <canvas id="gameCanvas" width="400" height="400"></canvas>
-        
         <div class="controls">
             <button class="ctrl-btn" id="btn-up">🔼</button>
             <div class="mid-ctrl">
@@ -36,9 +37,9 @@
         </div>
     </div>
 
-    <audio id="snd-eat" src="https://pixabay.com/sound-effects/people-eating-sound-effect-36186/"></audio>
-    <audio id="snd-die" src="https://pixabay.com/sound-effects/film-special-effects-086398-game-die-81356/"></audio>
-    <audio id="snd-click" src="https://pixabay.com/sound-effects/film-special-effects-computer-mouse-click-352734/"></audio>
+    <audio id="snd-eat" src="eat.mp3"></audio>
+    <audio id="snd-die" src="die.mp3"></audio>
+    <audio id="snd-click" src="click.mp3"></audio>
 
     <script src="game.js"></script>
     <script>
