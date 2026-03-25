@@ -5,7 +5,7 @@ const sndDie = document.getElementById("snd-die");
 const sndClick = document.getElementById("snd-click");
 
 let snake, food, obstacles, dx, dy, score, gameInterval;
-let currentDifficulty = 'Vừa';
+let currentDifficulty = 'Vừa'; // Biến này giờ sẽ được giữ nguyên suốt phiên chơi
 let speed = 130;
 let highScore = localStorage.getItem("snakeHS") || 0;
 
@@ -37,7 +37,7 @@ function sendNotif() {
     navigator.serviceWorker.ready.then(reg => {
         reg.showNotification("😎 Đến giờ thể hiện của mình rồi!", {
             body: "Hãy vào trò chơi và bắt đầu phá kỷ lục ngay nào.",
-            icon: "192x192.png", badge: "192x192.jpeg", tag: "snake-daily", vibrate: [500, 100, 500]
+            icon: "icon-192.png", badge: "icon-192.png", tag: "snake-daily", vibrate: [500, 100, 500]
         });
     });
 }
@@ -137,10 +137,27 @@ function draw() {
 }
 
 function gameOver() {
-    playSound(sndDie); clearInterval(gameInterval);
+    playSound(sndDie); 
+    clearInterval(gameInterval);
     if(score > highScore) { highScore = score; localStorage.setItem("snakeHS", highScore); }
-    Swal.fire({ title: 'BẠN ĐÃ DIE! 💀', html: `Điểm: ${score} <br> Kỷ lục: ${highScore}`, confirmButtonText: 'Thử lại', showCancelButton: true, cancelButtonText: 'Menu' })
-    .then(res => { if(res.isConfirmed) resetGame(); else location.reload(); });
+    
+    Swal.fire({ 
+        title: 'BẠN ĐÃ DIE! 💀', 
+        html: `Điểm: ${score} <br> Kỷ lục: ${highScore} <br> Chế độ: ${currentDifficulty}`, 
+        confirmButtonText: 'Thử lại', 
+        showCancelButton: true, 
+        cancelButtonText: 'Menu' 
+    })
+    .then(res => { 
+        if(res.isConfirmed) {
+            resetGame(); 
+        } else {
+            // Thay vì location.reload(), ta chỉ chuyển màn hình để giữ biến currentDifficulty
+            document.getElementById("game-screen").style.display = "none";
+            document.getElementById("main-menu").style.display = "block";
+            document.getElementById("high-score").innerText = `Kỷ lục: ${highScore}`;
+        }
+    });
 }
 
 const move = (nx, ny) => { if(nx!==-dx || ny!==-dy) { dx=nx; dy=ny; playSound(sndClick); } };
@@ -152,4 +169,3 @@ window.onkeydown = e => {
     if(e.key.includes("Up")) move(0,-20); if(e.key.includes("Down")) move(0,20);
     if(e.key.includes("Left")) move(-20,0); if(e.key.includes("Right")) move(20,0);
 };
-
