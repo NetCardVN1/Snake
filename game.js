@@ -5,7 +5,9 @@ const sndDie = document.getElementById("snd-die");
 const sndClick = document.getElementById("snd-click");
 
 let snake, food, obstacles, dx, dy, score, gameInterval;
-let currentDifficulty = 'Vừa'; // Biến này giờ sẽ được giữ nguyên suốt phiên chơi
+
+// Lấy chế độ đã lưu hoặc mặc định là Vừa
+let currentDifficulty = localStorage.getItem("snakeLevel") || 'Vừa';
 let speed = 130;
 let highScore = localStorage.getItem("snakeHS") || 0;
 
@@ -14,7 +16,7 @@ document.getElementById("high-score").innerText = `Kỷ lục: ${highScore}`;
 
 function playSound(s) { s.currentTime = 0; s.play().catch(() => {}); }
 
-// --- THÔNG BÁO HỆ THỐNG ---
+// --- THÔNG BÁO ---
 function initNotifications() {
     if ("Notification" in window) {
         Notification.requestPermission().then(perm => {
@@ -35,9 +37,9 @@ function initNotifications() {
 }
 function sendNotif() {
     navigator.serviceWorker.ready.then(reg => {
-        reg.showNotification("😎 Đến giờ thể hiện của mình rồi!", {
-            body: "Hãy vào trò chơi và bắt đầu phá kỷ lục ngay nào.",
-            icon: "icon-192.png", badge: "icon-192.png", tag: "snake-daily", vibrate: [500, 100, 500]
+        reg.showNotification("🐍 Đến giờ săn mồi rồi ní!", {
+            body: "Vào phá kỷ lục của chính mình ngay nào.",
+            icon: "192x192.jpeg", badge: "192x192.jpeg", vibrate: [500, 100, 500]
         });
     });
 }
@@ -50,11 +52,13 @@ function showDifficulty() {
         title: 'Chọn mức độ',
         input: 'radio',
         inputOptions: { 'Dễ': 'Dễ 🍏', 'Vừa': 'Vừa 🧱', 'Khó': 'Khó 🔥', 'Siêu Khó': 'Siêu Khó 💀' },
-        inputValue: currentDifficulty
+        inputValue: currentDifficulty,
+        showCancelButton: true
     }).then(res => { 
         if(res.value) {
             currentDifficulty = res.value;
-            Swal.fire({ title: "Thành công!", text: `Bạn đã chọn mức độ ${currentDifficulty}!`, icon: "success", timer: 1500, showConfirmButton: false });
+            localStorage.setItem("snakeLevel", currentDifficulty);
+            Swal.fire({ title: "Thành công!", text: `Đã chọn mức độ ${currentDifficulty}!`, icon: "success", timer: 1500, showConfirmButton: false });
         }
     });
 }
@@ -63,18 +67,13 @@ function exitGame() {
     playSound(sndClick);
     Swal.fire({
         title: "Bạn chắc muốn thoát?",
-        text: "Mọi nỗ lực săn mồi sẽ bị hủy bỏ đó nha!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Tôi chắc chắn"
-    }).then((result) => {
-        if (result.isConfirmed) window.location.href = "about:blank";
-    });
+        confirmButtonText: "Thoát"
+    }).then(res => { if (res.isConfirmed) window.location.href = "about:blank"; });
 }
 
-// --- GAME CORE ---
+// --- CORE ---
 function setupLevel() {
     obstacles = [];
     if (currentDifficulty === 'Dễ') speed = 180;
@@ -82,10 +81,10 @@ function setupLevel() {
         speed = 130;
         for(let i=0; i<400; i+=20) if(Math.random()>0.85) obstacles.push({x:i, y:0},{x:i, y:380});
     } else if (currentDifficulty === 'Khó') {
-        speed = 100;
+        speed = 95;
         for(let i=80; i<320; i+=20) obstacles.push({x:120, y:i}, {x:280, y:i});
     } else {
-        speed = 70;
+        speed = 65;
         for(let i=0; i<20; i++) obstacles.push({x:Math.floor(Math.random()*19)*20, y:Math.floor(Math.random()*19)*20});
     }
 }
@@ -124,38 +123,27 @@ function draw() {
     }
     snake.unshift(head);
     if(head.x===food.x && head.y===food.y) {
-        if (food.type === 'red') {
-            score += 5;
-            if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
-        } else {
-            score += 1;
-            if ("vibrate" in navigator) navigator.vibrate(40);
-        }
+        if (food.type === 'red') { score += 5; if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]); }
+        else { score += 1; if ("vibrate" in navigator) navigator.vibrate(40); }
         document.getElementById("score").innerText = `Điểm: ${score}`;
         playSound(sndEat); createFood();
     } else snake.pop();
 }
 
 function gameOver() {
-    playSound(sndDie); 
-    clearInterval(gameInterval);
+    playSound(sndDie); clearInterval(gameInterval);
     if(score > highScore) { highScore = score; localStorage.setItem("snakeHS", highScore); }
-    
     Swal.fire({ 
         title: 'BẠN ĐÃ DIE! 💀', 
-        html: `Điểm: ${score} <br> Kỷ lục: ${highScore} <br> Chế độ: ${currentDifficulty}`, 
+        html: `Điểm: ${score} <br> Kỷ lục: ${highScore} <br> Chế độ: <b>${currentDifficulty}</b>`, 
         confirmButtonText: 'Thử lại', 
         showCancelButton: true, 
         cancelButtonText: 'Menu' 
-    })
-    .then(res => { 
-        if(res.isConfirmed) {
-            resetGame(); 
-        } else {
-            // Thay vì location.reload(), ta chỉ chuyển màn hình để giữ biến currentDifficulty
+    }).then(res => { 
+        if(res.isConfirmed) resetGame(); 
+        else {
             document.getElementById("game-screen").style.display = "none";
             document.getElementById("main-menu").style.display = "block";
-            document.getElementById("high-score").innerText = `Kỷ lục: ${highScore}`;
         }
     });
 }
@@ -165,7 +153,3 @@ document.getElementById("btn-up").onclick = () => move(0,-20);
 document.getElementById("btn-down").onclick = () => move(0,20);
 document.getElementById("btn-left").onclick = () => move(-20,0);
 document.getElementById("btn-right").onclick = () => move(20,0);
-window.onkeydown = e => {
-    if(e.key.includes("Up")) move(0,-20); if(e.key.includes("Down")) move(0,20);
-    if(e.key.includes("Left")) move(-20,0); if(e.key.includes("Right")) move(20,0);
-};
