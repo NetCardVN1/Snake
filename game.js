@@ -37,7 +37,7 @@ function sendNotif() {
     navigator.serviceWorker.ready.then(reg => {
         reg.showNotification("😎 Đến giờ thể hiện của mình rồi!", {
             body: "Hãy vào trò chơi và bắt đầu phá kỷ lục ngay nào.",
-            icon: "192x192.png", badge: "192x192.png", tag: "snake-daily", vibrate: [500, 100, 500]
+            icon: "192x192.png", badge: "192x192.jpeg", tag: "snake-daily", vibrate: [500, 100, 500]
         });
     });
 }
