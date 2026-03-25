@@ -1,0 +1,25 @@
+body { 
+    background: #8DB600; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    text-align: center; margin: 0; overflow: hidden; touch-action: manipulation;
+}
+#main-menu { margin-top: 10vh; }
+.menu-btn { 
+    display: block; width: 220px; margin: 15px auto; padding: 15px; 
+    background: #1a1a1a; color: #8DB600; border: 3px solid #000; 
+    border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer;
+}
+#ui-top { 
+    display: flex; justify-content: space-around; padding: 10px; 
+    background: #1a1a1a; color: white; font-weight: bold;
+}
+#gameCanvas { 
+    background: #2c3e50; border: 5px solid #1a1a1a; 
+    margin-top: 10px; max-width: 95vw; height: auto;
+}
+.controls { margin-top: 15px; display: flex; flex-direction: column; align-items: center; }
+.ctrl-btn { 
+    width: 70px; height: 70px; font-size: 30px; margin: 5px; 
+    background: rgba(0,0,0,0.6); border: 2px solid #000; border-radius: 15px; color: white;
+}
+.mid-ctrl { display: flex; }
+
